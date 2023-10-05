@@ -60,11 +60,11 @@ def user_registered_sighandler(app, user, confirm_token, confirmation_token, for
     db.session.commit()
 
 from controllers import *
-from api import *
-api.add_resource(VenueAPI, "/api/venue", "/api/venue/<string:venue_name>")
+#from api import *
+#api.add_resource(VenueAPI, "/api/venue", "/api/venue/<string:venue_name>")
 #api.add_resource(VenueAPI, "/api/venue")
 
-api.add_resource(ShowAPI, "/api/show", "/api/show/<string:show_name>")
+#api.add_resource(ShowAPI, "/api/show", "/api/show/<string:show_name>")
 
 if __name__ == '__main__':
     app.run(port=8080)
