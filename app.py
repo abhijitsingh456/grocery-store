@@ -5,10 +5,6 @@ import os
 from flask_cors import CORS
 from flask_security import Security, SQLAlchemySessionUserDatastore, SQLAlchemyUserDatastore
 
-from flask_security import RegisterForm
-from wtforms import StringField
-from wtforms.validators import DataRequired
-
 import flask_babel
 from flask_security import user_registered
 

@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_security import UserMixin, RoleMixin
+#from flask_security import UserMixin, RoleMixin
+from flask_security.models import fsqla_v3 as fsqla
+
 from flask_security.utils import hash_password
 
 db = SQLAlchemy()
@@ -10,7 +12,7 @@ roles_users = db.Table('roles_users',
             db.Column('role_id',db.Integer(), db.ForeignKey('role.id')))
 
 
-class User(db.Model, UserMixin):
+class User(db.Model, fsqla.FsUserMixin):
     __tablename__='user'
     id = db.Column(db.Integer, nullable=False, unique=True, autoincrement=True, primary_key=True)
     username = db.Column(db.String(1000))
@@ -24,7 +26,7 @@ class User(db.Model, UserMixin):
         return self.email
 
 
-class Role(db.Model, RoleMixin):
+class Role(db.Model, fsqla.FsRoleMixin):
     __tablename__='role'
     id = db.Column(db.Integer, nullable=False, unique=True, autoincrement=True, primary_key=True)
     name = db.Column(db.String(1000))
