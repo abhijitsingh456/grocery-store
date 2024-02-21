@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <style>
+        .navbar {
+            background-color: rgb(6, 189, 52);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">
+            <a href="/"><img src="../static/logos/in@minute-logos_white - Copy.png" width="200" height="80" alt=""></a>
+        </a>
+        <div class="collapse navbar-collapse p-3 mb-2 text-light" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/store_reports/{{ store_id }}">Export CSV</a>
+                </li>
+                <li class="nav-item">
+                    <b>Hey {{current_user.username}}! </b>
+                    <a href="/logout" class="btn btn-success my-2 my-sm-0" role="button">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Store Manager?
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/register_manager">Register as Store Manager</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="/login" class="btn btn-success my-2 my-sm-0" role="button">Sign in</a>
+                    <a href="/register" class="btn btn-success my-2 my-sm-0" role="button">Sign Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div>
+        {% if error %}
+          <div class="alert alert-primary" role="alert">
+            Error: {{ error }}
+          </div>
+        {% endif %}
+      </div>
+    <div class="container text-centre p-2 mb-2" id="app">
+        <div class="row text-center">
+            <div class="col-sm-4">
+                <div class="card text-centre">
+                    <img class="card-img-top" src="../static/categories/add-category.jpg" width="80" height="220"
+                        alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Add New Category</h5>
+                        <p class="card-text">Add new categories</p>
+                        <button @click="add_category" class="btn btn-primary">Add Now!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card text-centre">
+                    <img class="card-img-top" src="../static/categories/add-item.jpg" width="80" height="220"
+                        alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Add New Item</h5>
+                        <p class="card-text">Add new items</p>
+                        <button @click="add_new_item" class="btn btn-primary">Add Now!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card text-centre">
+                    <img class="card-img-top" src="../static/categories/add-existing-item.jpg" width="80" height="220"
+                        alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Add items to sell</h5>
+                        <p class="card-text">Add existing items to store</p>
+                        <button @click="add_item" class="btn btn-primary">Add Now!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="selected == 'add_category'" class="row p-2 mb-2">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="container p-1 mb-1">
+                    <div class="card p-3 bg-light' text-center">
+                        <form action="{{ url_for('add_new_category') }}" method="POST" enctype="multipart/form-data">
+                            <div class="form-group p-2 mb-2">
+                                <label for="StoreName">Category Name</label>
+                                <input type="text" class="form-control" id="store_name"
+                                    placeholder="Enter Name of Category" name="category_name">
+                            </div>
+                            <button type=" submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+        <div v-if="selected == 'add_new_item'" class="row p-2 mb-2">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="container p-1 mb-1">
+                    <div class="card p-3 bg-light' text-center">
+                        <form action="{{ url_for('add_new_item') }}" method="POST" enctype="multipart/form-data">
+                            <div class="form-group p-2 mb-2">
+                                <label>Category Name</label>
+                                <select id="category" name="category_name" class="form-control">
+                                    <option selected>Select a Category</option>
+                                    <option v-for="category in categories">[[ category.name ]]</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group p-2 mb-2">
+                                <label>Item Name</label>
+                                <input type="text" class="form-control" placeholder="Enter Name of Item"
+                                    name="item_name">
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Item Unit</label>
+                                <select id="unit" name="item_unit" class="form-control">
+                                    <option selected>Select a Unit</option>
+                                    <option>kg</option>
+                                    <option>Litre</option>
+                                    <option>Piece</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Unit Price</label>
+                                <input type="number" class="form-control" placeholder="Enter Unit Price"
+                                    name="unit_price">
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label for="StoreName">Best Before</label>
+                                <input type="date" class="form-control" placeholder="Enter Best Before Date"
+                                    name="best_before">
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Item Image</label>
+                                <input type="file" class="form-control" placeholder="Upload Image" accept=".jpg"
+                                    name="item_image">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+        <div v-if="selected == 'add_item'" class="row p-2 mb-2">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="container p-1 mb-1">
+                    <div class="card p-3 bg-light' text-center">
+                        <form action="{{ url_for('add_to_store') }}" method="POST" enctype="multipart/form-data">
+                            <div class="form-group p-2 mb-2">
+                                <label>Category Name</label>
+                                <select id="category" name="category_name" v-model="category_selected"
+                                    class="form-control">
+                                    <option selected>Select a Category</option>
+                                    <option v-for="category in categories">[[ category.name ]]</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Item Name</label>
+                                <select id="item" name="item_name" class="form-control">
+                                    <option selected>Select a Item</option>
+                                    <option v-for="item in items_to_select">[[ item ]]</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Quantity Remaining</label>
+                                <input type="number" class="form-control" placeholder="Enter Quantity Remaining"
+                                    name="quantity_remaining">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+       
+        <div class="row text-center p-2 mb-2">
+            <div class="col-sm-4">
+                <div class="card text-centre">
+                    <img class="card-img-top" src="../static/categories/add-category.jpg" width="80" height="220"
+                        alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Edit Category</h5>
+                        <p class="card-text">Edit Category Name</p>
+                        <button @click="edit_category" class="btn btn-primary">Select to Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="card text-centre">
+                    <img class="card-img-top" src="../static/categories/add-item.jpg" width="80" height="220"
+                        alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">Edit Item</h5>
+                        <p class="card-text">Edit items</p>
+                        <button @click="edit_item" class="btn btn-primary">Select to Edit</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div v-if="selected == 'edit_category'" class="row p-2 mb-2">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="container p-1 mb-1">
+                    <div class="card p-3 bg-light' text-center">
+                        <form action="{{ url_for('edit_category') }}" method="POST" enctype="multipart/form-data">
+                            <div class="form-group p-2 mb-2">
+                                <label>Category Name</label>
+                                <select id="category" name="old_category_name" v-model="category_selected"
+                                    class="form-control">
+                                    <option selected>Select a Category</option>
+                                    <option v-for="category in categories">[[ category.name ]]</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label for="StoreName">New Category Name</label>
+                                <input type="text" class="form-control" id="store_name"
+                                    placeholder="Enter New Name of Category" name="new_category_name">
+                            </div>
+                            <a class="btn btn-danger" v-bind:href="'/delete_cat_request/'+ category_selected" role="button">Delete</a>
+                            <button type=" submit" class="btn btn-primary">Edit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+
+        <div v-if="selected == 'edit_item'" class="row p-2 mb-2">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="container p-1 mb-1">
+                    <div class="card p-3 bg-light' text-center">
+                        <form action="{{ url_for('edit_item') }}" method="POST" enctype="multipart/form-data">
+                            <div class="form-group p-2 mb-2">
+                                <label>Category Name</label>
+                                <select id="category" name="category_name" v-model="category_selected"
+                                    class="form-control">
+                                    <option selected>Select a Category</option>
+                                    <option v-for="category in categories">[[ category.name ]]</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Item Name</label>
+                                <select id="item" name="old_item_name" class="form-control" v-model="old_item_name">
+                                    <option selected>Select a Item</option>
+                                    <option v-for="item in items_to_select">[[ item ]]</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>New Item Name</label>
+                                <input type="text" class="form-control" placeholder="Enter New Name of Item"
+                                    name="new_item_name" v-bind:value="`${old_item_name}`">
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Item Unit</label>
+                                <select id="unit" name="item_unit" class="form-control">
+                                    <option selected>[[ edit_unit ]]</option>
+                                    <option>kg</option>
+                                    <option>Litre</option>
+                                    <option>Piece</option>
+                                </select>
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label>Unit Price</label>
+                                <input type="number" class="form-control"
+                                    name="unit_price" v-bind:value="`${edit_price}`">
+                            </div>
+                            <div class="form-group p-2 mb-2">
+                                <label for="StoreName">Best Before</label>
+                                <input type="date" v-bind:value="`${edit_best_before}`" class="form-control"
+                                    name="best_before">
+                            </div>
+                            <a class="btn btn-danger" v-bind:href="'/delete_item_request/'+ old_item_name" role="button">Delete</a>
+                            <button type=" submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+
+    </div>
+
+
+    <script src='../static/manager_homepage.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

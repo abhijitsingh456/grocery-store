@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <style>
+        .navbar {
+            background-color: rgb(6, 189, 52);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">
+            <a href="/"><img src="../static/logos/in@minute-logos_white - Copy.png" width="200" height="80" alt=""></a>
+        </a>
+        <div class="collapse navbar-collapse p-3 mb-2 text-light" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                      <b>Hey {{current_user.username}}! </b>
+                      <a href="/logout" class="btn btn-success my-2 my-sm-0" role="button">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Store Manager?
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/register_manager">Register as Store Manager</a>
+                      </div>
+                    </li>
+                    <li class="nav-item">
+                      <a href="/login" class="btn btn-success my-2 my-sm-0" role="button">Sign in</a>
+                      <a href="/register" class="btn btn-success my-2 my-sm-0" role="button">Sign Up</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div>
+        {% if error %}
+          <div class="alert alert-primary" role="alert">
+            Error: {{ error }}
+          </div>
+        {% endif %}
+      </div>
+    <div class="container p-3 mb-3">
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <div class="container p-1 mb-1">
+                    <div class="card p-3 bg-light'">
+                    <div class="text-center">
+                        <h2>Enter Store Details</h2>
+                    </div>
+                    <form method="POST">
+                        <div class="form-group p-2 mb-2">
+                            <label for="StoreName">Username</label>
+                            <input type="text" class="form-control disabled" id="username"
+                                value="{{ current_user.username }}" name="username" readonly>
+                        </div>
+                        <div class="form-group p-2 mb-2">
+                            <label for="StoreName">Store Name</label>
+                            <input type="text" class="form-control" id="store_name"
+                                placeholder="Enter Your Store Name" name="store_name">
+                        </div>
+                        <div class="form-group p-2 mb-2">
+                            <label for="StoreCity">Store Address/City</label>
+                            <input type="text" class="form-control" id="store_city"
+                                placeholder="Enter Your Store Address/City" name="store_address">
+                        </div>
+                        <div class="text-center"><button type="submit" class="btn btn-primary">Submit</button></div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+
+        <script src='../static/homepage.js'></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>
